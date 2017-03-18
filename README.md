@@ -147,3 +147,20 @@ Considering the implemented pipeline I have the following thoughts:
 
 5- I think this way of detecting vehicles is very slow to be used in a real time application without major improvement and optimisations.
 
+
+## Resources
+1- https://www.youtube.com/watch?v=7S5qXET179I
+
+2- http://lear.inrialpes.fr/people/triggs/pubs/Dalal-cvpr05.pdf
+
+3- http://scikit-image.org/docs/dev/api/skimage.feature.html?highlight=feature%20hog#skimage.feature.hog
+
+4- http://scikit-image.org/docs/dev/auto_examples/features_detection/plot_hog.html
+
+5- http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.StandardScaler.html
+
+6- https://medium.com/towards-data-science/vehicle-detection-and-tracking-6665d6e1089b#.d2esacych
+
+7- http://navoshta.com/detecting-road-features/
+
+8- https://medium.com/@ksakmann/vehicle-detection-and-tracking-using-hog-features-svm-vs-yolo-73e1ccb35866#.k1rotod7d
