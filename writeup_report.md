@@ -13,7 +13,7 @@ The goals / steps of this project are the following:
 
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
-###Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+#### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
 
 ### Project code is in the the IPython notebook [vehicle_detection.ipynb](vehicle_detection.ipynb)
@@ -21,7 +21,7 @@ The goals / steps of this project are the following:
 
 ## Data Exploration
 
-I started by reading in all the vehicle and non-vehicle images dataset provided by Udacity which comes in two separate datasets: images containing vehicle and images not containing vehicles. The dataset contains 17,760 color RGB images 64×64 px each, with 8,792 samples labeled as containing vehicles and 8,968 samples labeled as non-vehicles.
+I started by reading in all the vehicle and non-vehicle images dataset provided by Udacity which comes in two separate datasets: images containing vehicle and images not containing vehicles. The dataset contains 17,760 color RGB images 64×64 pixels each, with 8,792 samples labeled as containing vehicles and 8,968 samples labeled as non-vehicles.
 
 Here is an example of one of each of the vehicle and non-vehicle classes:
 
@@ -40,7 +40,8 @@ I then explored different features: color spaces and different skimage.hog() par
 
 #### As a feature vector I used a combination of:
 
-### 1 - Spatial features, which are nothing else but a down sampled copy of the image patch to be checked itself (32x32 pixels).
+### 1 - Spatial features 
+Which is a down sampled copy of the image patch to be checked itself (32x32 pixels).
 
 #### Example of data image:
 ![alt text](output_images/image_example_2.jpg)
