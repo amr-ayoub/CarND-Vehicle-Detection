@@ -93,48 +93,54 @@ A linear SVM offered the best compromise between speed and accuracy, outperformi
 
 ## Sliding Window Search
 
-####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
+The image is scanned using a sliding window. For every window the feature vector is computed and fed into the classifier.
+As the cars appear at different distances, it is also necessary to search at several window scales, so the larger windows closer to the driver and the smaller closer to the horizon. The more boxes for a sliding window, the more calculations per video image.
 
-I decided to search random window positions at random scales all over the image and came up with this (ok just kidding I didn't actually ;):
+#### Example of video frame image:
+![alt text](test_images/test6.jpg)
 
-![alt text][image3]
+#### All search windows:
+![alt text](output_images/search_windows_different_scales.jpg)
 
-####2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
-
-Ultimately I searched on two scales using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images:
-
-![alt text][image4]
----
-
-### Video Implementation
-
-####1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (somewhat wobbly or unstable bounding boxes are ok as long as you are identifying the vehicles most of the time with minimal false positives.)
-Here's a [link to my video result](./project_video.mp4)
+#### Detected windows:
+![alt text](output_images/Hot_windows.jpg)
 
 
-####2. Describe how (and identify where in your code) you implemented some kind of filter for false positives and some method for combining overlapping bounding boxes.
+## Video Implementation
 
-I recorded the positions of positive detections in each frame of the video.  From the positive detections I created a heatmap and then thresholded that map to identify vehicle positions.  I then used `scipy.ndimage.measurements.label()` to identify individual blobs in the heatmap.  I then assumed each blob corresponded to a vehicle.  I constructed bounding boxes to cover the area of each blob detected.  
+For filtering out the false positives and combining overlapping bounding boxes:
 
-Here's an example result showing the heatmap from a series of frames of video, the result of `scipy.ndimage.measurements.label()` and the bounding boxes then overlaid on the last frame of video:
+As there are multiple detections on different scales and overlapping windows, we need to merge nearby detections. In order to do that we calculate a heatmap of intersecting regions that were classified as containing vehicles. Only considering those parts of the image as positives where more than 20 detections had been recorded. The result is a heatmap with significantly reduced noise, as shown below:
 
-### Here are six frames and their corresponding heatmaps:
+#### Detected windows:
+![alt text](output_images/Hot_windows.jpg)
 
-![alt text][image5]
+#### Heatmap:
+![alt text](output_images/heat_map.jpg)
 
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
-![alt text][image6]
+Then using `label()` function from `scipy.ndimage.measurements` module to detect individual groups of detections, and calculate a bounding rect for each of them.
 
-### Here the resulting bounding boxes are drawn onto the last frame in the series:
-![alt text][image7]
-
+![alt text](output_images/labeled_image.jpg)
 
 
----
+![alt text](output_images/labeled_regions_image.jpg)
 
-###Discussion
+I always kept track of the detected windows of the last 20 frames to accumulate detections instead of classifying each frame individually.
 
-####1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+Here's a [link to my video result](output_project_video.mp4)
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
 
+
+## Discussion
+
+Considering the implemented pipeline I have the following thoughts:
+
+1- The most challenging part in the project was to choose the best features to differentiate between cars and not car detection.
+
+2- Increasing the number of search windows makes the pipeline is very slow to process, also needs to find a better way to detect the exact size of the vehicle.
+
+3- Other types of vehicles (except cars) and pedestrians would not be detected because they are not in the training data.
+
+4-  The pipeline likely to fail if the vehicle positions are different from those classifier was trained on.
+
+5- I think this way of detecting vehicles is very slow to be used in a real time application without major improvement and optimisations.
