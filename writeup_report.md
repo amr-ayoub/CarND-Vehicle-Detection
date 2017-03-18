@@ -1,9 +1,6 @@
-##Writeup Template
-###You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
 
----
 
-**Vehicle Detection Project**
+# Vehicle Detection Project (SDC ND Project 5)
 
 The goals / steps of this project are the following:
 
@@ -14,52 +11,87 @@ The goals / steps of this project are the following:
 * Run your pipeline on a video stream (start with the test_video.mp4 and later implement on full project_video.mp4) and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
 * Estimate a bounding box for vehicles detected.
 
-[//]: # (Image References)
-[image1]: ./examples/car_not_car.png
-[image2]: ./examples/HOG_example.jpg
-[image3]: ./examples/sliding_windows.jpg
-[image4]: ./examples/sliding_window.jpg
-[image5]: ./examples/bboxes_and_heat.png
-[image6]: ./examples/labels_map.png
-[image7]: ./examples/output_bboxes.png
-[video1]: ./project_video.mp4
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
 ###Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
----
-###Writeup / README
 
-####1. Provide a Writeup / README that includes all the rubric points and how you addressed each one.  You can submit your writeup as markdown or pdf.  [Here](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) is a template writeup for this project you can use as a guide and a starting point.  
-
-You're reading it!
-
-###Histogram of Oriented Gradients (HOG)
-
-####1. Explain how (and identify where in your code) you extracted HOG features from the training images.
-
-The code for this step is contained in the first code cell of the IPython notebook (or in lines # through # of the file called `some_file.py`).  
-
-I started by reading in all the `vehicle` and `non-vehicle` images.  Here is an example of one of each of the `vehicle` and `non-vehicle` classes:
-
-![alt text][image1]
-
-I then explored different color spaces and different `skimage.hog()` parameters (`orientations`, `pixels_per_cell`, and `cells_per_block`).  I grabbed random images from each of the two classes and displayed them to get a feel for what the `skimage.hog()` output looks like.
-
-Here is an example using the `YCrCb` color space and HOG parameters of `orientations=8`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
+### Project code is in the the IPython notebook [vehicle_detection.ipynb](vehicle_detection.ipynb)
 
 
-![alt text][image2]
+## Data Exploration
 
-####2. Explain how you settled on your final choice of HOG parameters.
+I started by reading in all the vehicle and non-vehicle images dataset provided by Udacity which comes in two separate datasets: images containing vehicle and images not containing vehicles. The dataset contains 17,760 color RGB images 64×64 px each, with 8,792 samples labeled as containing vehicles and 8,968 samples labeled as non-vehicles.
 
-I tried various combinations of parameters and...
+Here is an example of one of each of the vehicle and non-vehicle classes:
 
-####3. Describe how (and identify where in your code) you trained a classifier using your selected HOG features (and color features if you used them).
+#### Random sample labeled as containing vehicle:
+![alt text](output_images/example_vehicle_data_images.jpg)
 
-I trained a linear SVM using...
 
-###Sliding Window Search
+#### Random sample labeled as containing non-vehicle:
+![alt text](output_images/example_non_vehicle_data_images.jpg)
+
+
+
+## Feature extraction
+
+I then explored different features: color spaces and different skimage.hog() parameters (orientations, pixels_per_cell and cells_per_block). I settled on a combination of HOG (Histogram of Oriented Gradients), spatial information and color channel histograms, all using YCbCr color space. Initially I used only the Y channel but I found that it was not enough so I used all 3 colour channels
+
+#### As a feature vector I used a combination of:
+
+### 1 - Spatial features, which are nothing else but a down sampled copy of the image patch to be checked itself (32x32 pixels).
+
+#### Example of data image:
+![alt text](output_images/image_example_2.jpg)
+
+#### Example of data image applying Spatial binning
+![alt text](output_images/image_example_2_spatial_binning.jpg)
+
+
+### 2- Color histogram features using individual color channel histogram information (YCbCr color space), breaking it into 32 bins within (0, 256) range.
+
+#### Example image
+![alt text](output_images/image_example_2.jpg)
+
+#### YCbCr color space histogram
+![alt text](output_images/image_example_2_YCrCb_Histogram.jpg)
+
+
+### 3- Histogram of oriented gradients (HOG) features, that capture the gradient structure of each image channel and work well under different lighting conditions.
+
+I explored different parameters: `orientations`, `pixels_per_cell` and `cells_per_block`. eventually I settled on HOG with 10 orientations, 8 pixels per cell, 2 cells per block and 'YCrCb' color_space. The experiments went as training the classifier and checking the accurcy. 
+
+Here is an example using the `YCrCb` color space and HOG parameters of `orientations=10`, `pixels_per_cell=(8, 8)` and `cells_per_block=(2, 2)`:
+
+#### Example of data image:
+![alt text](output_images/image_example_2.jpg)
+
+#### Y channel:
+![alt text](output_images/image_example_2_Y_channel.jpg)
+
+#### HOG on Y channel:
+![alt text](output_images/image_example_2_Y_channel_HOG.jpg)
+
+#### Cr channel:
+![alt text](output_images/image_example_2_Cr_channel.jpg)
+
+#### HOG on Cr channel:
+![alt text](output_images/image_example_2_Cr_channel_HOG.jpg)
+
+
+#### Cb channel:
+![alt text](output_images/image_example_2_Cb_channel.jpg)
+
+#### HOG on Cb channel:
+![alt text](output_images/image_example_2_Cb_channel_HOG.jpg)
+
+
+## Training a linear support vector machine classifier
+A linear SVM offered the best compromise between speed and accuracy, outperforming nonlinear SVMs (rbf kernel). I trained a Linear SVC (sklearn implementation), used sklearn `train_test_split` to split the dataset into training and validation sets and used sklearn `StandardScaler` for feature scaling.
+
+
+## Sliding Window Search
 
 ####1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
